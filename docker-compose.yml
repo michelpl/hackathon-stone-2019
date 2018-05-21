@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  nginx:
+    image: gabrieldeveloper/nginx:latest
+    container_name: nginx
+    ports:
+     - "8081:80"
+    volumes:
+     - ./app:/var/www/html
+
+  php:
+    image: gabrieldeveloper/php:7.2
+    container_name: php
+    volumes:
+     - ./app:/var/www/html
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  postgres:
+    image: postgres:9.6
+    container_name: postgres
+    environment:
+      POSTGRES_ROOT_PASSWORD: secret
+      POSTGRES_DATABASE: homestead
+      POSTGRES_USER: homestead
+      POSTGRES_PASSWORD: secret
+    volumes:
+     - data:/var/lib/postgresql
+
+volumes:
+  data:
+    driver: "local"
