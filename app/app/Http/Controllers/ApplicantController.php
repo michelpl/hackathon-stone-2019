@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApplicantPosition;
+use App\Models\ApplicantSkill;
 use Illuminate\Http\Request;
 use App\Models\Applicant;
 
@@ -14,8 +16,7 @@ class ApplicantController extends Controller
      */
     public function index()
     {
-        return Applicant::all();
-            //->load('skills')->load('positions');
+        return Applicant::all()->load('applicantSkills')->load('applicantPositions');
     }
 
     /**
@@ -27,9 +28,23 @@ class ApplicantController extends Controller
     public function store(Request $request)
     {
         $applicant = Applicant::create($request->all());
-        //$applicant->skills()->attach($request->skills);
-        //$applicant->positions()->attach($request->positions);
-        return $applicant;
+
+
+        foreach ($request->skills as $skill) {
+            $applicantSkill = new ApplicantSkill();
+            $applicantSkill->fill($skill);
+            $applicantSkill->applicant_id = $applicant->id;
+            $applicantSkill->save();
+        }
+
+        foreach ($request->positions as $position) {
+            $applicantPosition = new ApplicantPosition();
+            $applicantPosition->fill($position);
+            $applicantPosition->applicant_id = $applicant->id;
+            $applicantPosition->save();
+        }
+
+        return $applicant->load('applicantSkills')->load('applicantPositions');
     }
 
     /**
@@ -40,7 +55,7 @@ class ApplicantController extends Controller
      */
     public function show(Applicant $applicant)
     {
-        return $applicant;
+        return $applicant->load('applicantSkills')->load('applicantPositions');
     }
 
     /**

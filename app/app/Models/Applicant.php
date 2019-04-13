@@ -15,4 +15,14 @@ class Applicant extends Model
         "email",
         "linkedin_id"
     ];
+
+    public function applicantSkills()
+    {
+        return $this->hasMany(ApplicantSkill::class);
+    }
+
+    public function applicantPositions()
+    {
+        return $this->hasMany(ApplicantPosition::class);
+    }
 }
