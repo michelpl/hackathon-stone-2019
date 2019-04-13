@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use Faker\Generator as Faker;
+use App\Models\Applicant;
+use App\Models\ApplicantSkill;
+use App\Models\ApplicantPosition;
 
 class LinkedinController extends Controller
 {
@@ -22,13 +24,24 @@ class LinkedinController extends Controller
         $applicantData['first_name'] = $member->getFirstName()['localized']['pt_BR'];
         $applicantData['last_name'] = $member->getLastName()['localized']['pt_BR'];
 
-        header('Location: '. env('SUCCESS_URL') . "&id=" . $applicantId);
-        exit;
+        $applicant = Applicant::create($applicantData);
 
-        //@todo save user collected data
-        //Nome: $member->getFirstName()['localized']['pt_BR']
-        //Sobrenome: $member->getLastName()['localized']['pt_BR']
-        // maybe needs change the object that have 
+        foreach ($this->getRandomSkills() as $skill) {
+            $applicantSkill = new ApplicantSkill();
+            $applicantSkill->fill($skill);
+            $applicantSkill->applicant_id = $applicant->id;
+            $applicantSkill->save();
+        }
+
+        foreach ($this->getRandomPositions() as $position) {
+            $applicantPosition = new ApplicantPosition();
+            $applicantPosition->fill($position);
+            $applicantPosition->applicant_id = $applicant->id;
+            $applicantPosition->save();
+        }
+
+        header('Location: '. env('SUCCESS_URL') . "/" . $applicant->id);
+        exit;
     }
 
     public function getFakerApplicant()
@@ -39,9 +52,7 @@ class LinkedinController extends Controller
             'image_url' => $faker->url(),
             'phone_numbers' => $faker->phoneNumber(),
             'email' => $faker->email(),
-            'linkedin_id' => $faker->uuid(),
-            'applicant_skills' => $this->getRandomSkills(),
-            'applicant_positions' => $this->getRandomPositions()
+            'linkedin_id' => $faker->uuid()
         ];
     }
 
@@ -82,8 +93,6 @@ class LinkedinController extends Controller
 
     public function login()
     {
-        dd($this->getFakerApplicant());
-/*
         $provider = app('linkedin-provider');
         
         if (!isset($_GET['code'])) {
@@ -97,6 +106,6 @@ class LinkedinController extends Controller
             $_SESSION['oauth2state'] = $provider->getState();
             header('Location: '.$authUrl);
             exit;
-        }        */
+        }
     }
 }
