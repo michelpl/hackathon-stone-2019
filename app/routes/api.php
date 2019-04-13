@@ -20,3 +20,5 @@ Route::get('/linkedin', 'LinkedinController@login');
 Route::apiResource('/job', JobController::class);
 Route::apiResource('/skill', SkillController::class);
 Route::apiResource('/position', PositionController::class);
+Route::apiResource('/applicant', ApplicantController::class);
+Route::apiResource('/applicantskill', ApplicantSkillController::class);
