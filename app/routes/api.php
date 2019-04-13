@@ -15,3 +15,7 @@ use Illuminate\Http\Request;
 
 
 Route::apiResource('/product', ProductController::class);
+
+Route::get('/auth', 'LinkedinController@auth');
+
+Route::get('/linkedin', 'LinkedinController@login');
