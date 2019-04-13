@@ -20,4 +20,14 @@ class Job extends Model
     {
         return $this->belongsToMany('App\Models\Position', 'job_positions');
     }
+
+    public function jobSkills()
+    {
+        return $this->hasMany('App\Models\JobSkill');
+    }
+
+    public function jobPositions()
+    {
+        return $this->hasMany('App\Models\JobPosition');
+    }
 }

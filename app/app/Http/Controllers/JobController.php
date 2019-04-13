@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JobSkill;
 use Illuminate\Http\Request;
 use App\Models\Job;
 
@@ -14,7 +15,11 @@ class JobController extends Controller
      */
     public function index()
     {
-        return Job::all()->load('skills')->load('positions');
+        return
+            Job::all()
+                ->load('skills')
+                ->load('positions')
+                ->load('jobSkills');
     }
 
     /**
@@ -26,8 +31,24 @@ class JobController extends Controller
     public function store(Request $request)
     {
         $job = Job::create($request->all());
-        $job->skills()->attach($request->skills);
         $job->positions()->attach($request->positions);
+
+        $arraySkills = [];
+        foreach($request->skills as $skill) {
+            if (isset($skill['skill_id'])) {
+                $arraySkills[] =  $skill['skill_id'];
+            }
+        };
+        $job->skills()->attach($arraySkills);
+
+        foreach($request->skills as $skill) {
+            $jb = JobSkill::where('skill_id', $skill['skill_id'])->where('job_id', $job->id);
+            $newJb = $jb->first();
+            $newJb->weight = $skill['weight'];
+            $newJb->level = $skill['level'];
+            !$newJb->save();
+        };
+
         return $job;
     }
 
@@ -39,7 +60,11 @@ class JobController extends Controller
      */
     public function show(Job $job)
     {
-        return $job;
+        return
+            $job
+            ->load('skills')
+            ->load('positions')
+            ->load('jobSkills');
     }
 
     /**
