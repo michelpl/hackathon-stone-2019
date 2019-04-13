@@ -40,7 +40,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             \App\Http\Middleware\AcceptJson::class,
-            'throttle:600,100',
+            //'throttle:600,100',
             'bindings',
         ],
     ];
